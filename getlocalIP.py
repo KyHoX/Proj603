@@ -137,8 +137,8 @@ if __name__ == '__main__':
     # print("Your working IP address is: ",ip_to_find)
     netmask_of_ip = get_netmask_from_ip(ip_to_find)
     netmask_num = netmask_to_bit(netmask_of_ip)
-    # target_net = str(ip_to_find) + "/" + str(netmask_num)
-    target_net = '10.11.15.23'
+    target_net = str(ip_to_find) + "/" + str(netmask_num)
+    # target_net = '10.11.15.23'
     if netmask_of_ip:
         print(f"The IP address {ip_to_find} and netmask {netmask_of_ip} of your box, and CIDR is {netmask_num}, target network is {target_net}")
         nmap_result = nmap_scanner(target_net)
