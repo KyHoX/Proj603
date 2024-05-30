@@ -75,12 +75,12 @@ def filter_result(raw_data):
                         else:
                             service_name = 'none'
                         if 'product' in value_port['service']:
-                            print(f'Product name: {value_port['service']['product']}')
+                            print(f"Product name: {value_port['service']['product']}")
                             product_name = value_port['service']['product']
                         else:
                             product_name = 'none'
                         if 'version' in value_port['service']:
-                            print(f'Product version: {value_port['service']['version']}')
+                            print(f"Product version: {value_port['service']['version']}")
                             product_version = value_port['service']['version']
                         else: 
                             product_version = 'none'
@@ -137,7 +137,8 @@ if __name__ == '__main__':
     # print("Your working IP address is: ",ip_to_find)
     netmask_of_ip = get_netmask_from_ip(ip_to_find)
     netmask_num = netmask_to_bit(netmask_of_ip)
-    target_net = str(ip_to_find) + "/" + str(netmask_num)
+    # target_net = str(ip_to_find) + "/" + str(netmask_num)
+    target_net = '10.11.15.23'
     if netmask_of_ip:
         print(f"The IP address {ip_to_find} and netmask {netmask_of_ip} of your box, and CIDR is {netmask_num}, target network is {target_net}")
         nmap_result = nmap_scanner(target_net)
@@ -146,7 +147,7 @@ if __name__ == '__main__':
         # write scan result to json file
         # with open('nmap_result.json','w') as json_file:
         #     json.dump(nmap_result,json_file, indent=4)
-        print(f"{json_string}")
+        # print(f"{json_string}")
         tmp_data = json.loads(json_string)
         data = filter_result(tmp_data)
         print(f"{data}")
