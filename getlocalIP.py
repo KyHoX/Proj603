@@ -97,7 +97,8 @@ def filter_result(raw_data):
                             'Name' : service_name,
                             'Product' : product_name,
                             'Version' : product_version,
-                            'CPE' : cpe
+                            'CPE' : cpe,
+                            'Advisories': []
                         })
                 filter_data.append(temp_data)
     # write filter data to file
@@ -105,6 +106,31 @@ def filter_result(raw_data):
         json.dump(filter_data,json_file, indent=4)
     # print(filter_data) 
     return filter_data
+
+# write data into an HTML file 
+def write_to_html(writing_data,html_file):
+    #   Open file location
+    with open(html_file, "w") as html_file:
+        html_file.write("<html><head><title>Network Scan Results</title></head><body>")
+        html_file.write(f"<h2>Network Scan Results</h2>")
+        html_file.write("<table border='1'>")
+        html_file.write("<tr><th>Host IP</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>CVE Code</th><th>CVE Suggestions</th></tr>")
+        for i in range(len(writing_data)):
+        #for host, result in writing_data.item():
+            for y in range(len(writing_data[i]['ports'])):                
+                html_file.write("<tr>")
+                html_file.write(f"<td>{writing_data[i]['address']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Protocol']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Port']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Name']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['CPE']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Advisories']}</td>")
+                html_file.write("</tr>")
+        html_file.write("</table>")
+        html_file.write("</body></html>")
+    # print("Results exported to results.html")
+    # webbrowser.open("results.html")  # Automatically open the HTML file
+
 
 if __name__ == '__main__':
     ip_to_find = get_working_ip()
@@ -124,6 +150,7 @@ if __name__ == '__main__':
         tmp_data = json.loads(json_string)
         data = filter_result(tmp_data)
         print(f"{data}")
+        write_to_html(data,'test/nmap_results.html')
     else:
         print(f"No interface found with the IP address: {ip_to_find}")
 
