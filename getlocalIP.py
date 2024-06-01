@@ -38,7 +38,7 @@ def netmask_to_bit(subnet_mask):
 def nmap_scanner(target_net):
     nmap = nmap3.Nmap()
     # nmap_args = "-n -Pn -sV"
-    scan_results = nmap.nmap_version_detection(target_net, args="--privileged --script vulners --script-args mincvss=5.0")
+    scan_results = nmap.nmap_version_detection(target_net, args="-O -A -T4 --privileged --script vulners --script-args mincvss=5.0")
     return scan_results
 
 # Check whether it is a valid IPv4 address format
@@ -59,9 +59,17 @@ def filter_result(raw_data):
             # check if the host is up
             if value['state']['state'] == 'up': 
                 temp_data = {
+                    'hostname': 'none',
+                    'MAC_Address':'none',
                     'address':key,
                     'ports':[],
-                }                   
+                }
+                if 'name' in value['hostname'][0]:
+                    temp_data['hostname'] = value['hostname'][0]['name']
+                if value['macaddress'] is None:
+                    temp_data['MAC_Address'] = 'none'                                
+                else: 
+                    temp_data['MAC_Address'] = value['macaddress']['addr']                   
                 for value_port in value['ports']:
                     if value_port['state'] == 'open':
                         print(f"Host IP {key}: ")
@@ -84,12 +92,15 @@ def filter_result(raw_data):
                             product_version = value_port['service']['version']
                         else: 
                             product_version = 'none'
-                        for cpes in value_port['cpe']:
-                            if 'cpe' in cpes: 
-                                print(f"CPE: {cpes['cpe']}")
-                                cpe = cpes['cpe']
-                            else:
-                                cpe = 'none'
+                        if len(value_port['cpe']) > 0:
+                            for cpes in value_port['cpe']:
+                                if 'cpe' in cpes: 
+                                    print(f"CPE: {cpes['cpe']}")
+                                    cpe = cpes['cpe']
+                                else:
+                                    cpe = 'none'
+                        else:    
+                            cpe = 'none'
                         # Collect ports info
                         temp_data['ports'].append({
                             'Protocol': protocol,
@@ -114,7 +125,7 @@ def write_to_html(writing_data,html_file):
         html_file.write("<html><head><title>Network Scan Results</title></head><body>")
         html_file.write(f"<h2>Network Scan Results</h2>")
         html_file.write("<table border='1'>")
-        html_file.write("<tr><th>Host IP</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>CVE Code</th><th>CVE Suggestions</th></tr>")
+        html_file.write("<tr><th>Host IP</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>CPE Code</th><th>Suggestions</th></tr>")
         for i in range(len(writing_data)):
         #for host, result in writing_data.item():
             for y in range(len(writing_data[i]['ports'])):                
@@ -138,15 +149,15 @@ if __name__ == '__main__':
     netmask_of_ip = get_netmask_from_ip(ip_to_find)
     netmask_num = netmask_to_bit(netmask_of_ip)
     target_net = str(ip_to_find) + "/" + str(netmask_num)
-    # target_net = '10.11.15.23'
+    # target_net = '172.30.1.24'
     if netmask_of_ip:
         print(f"The IP address {ip_to_find} and netmask {netmask_of_ip} of your box, and CIDR is {netmask_num}, target network is {target_net}")
         nmap_result = nmap_scanner(target_net)
         # format JSON value to indent 2
         json_string = json.dumps(nmap_result, indent=4)
         # write scan result to json file
-        # with open('nmap_result.json','w') as json_file:
-        #     json.dump(nmap_result,json_file, indent=4)
+        with open('nmap_home_result.json','w') as json_file:
+            json.dump(nmap_result,json_file, indent=4)
         # print(f"{json_string}")
         tmp_data = json.loads(json_string)
         data = filter_result(tmp_data)
