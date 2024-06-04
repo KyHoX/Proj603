@@ -8,6 +8,7 @@ import psutil
 import nmap3
 import json 
 import ipaddress
+import requests
 
 # Get working IP address of machine. it should be a NIC 
 # which connected to a home network
@@ -141,6 +142,26 @@ def write_to_html(writing_data,html_file):
         html_file.write("</body></html>")
     # print("Results exported to results.html")
     # webbrowser.open("results.html")  # Automatically open the HTML file
+
+# get public information
+# Public IP address
+# City, Region, Timezone, ISP name
+def get_public_Info():
+    endpoint = 'https://ipinfo.io/json'
+    response = requests.get(endpoint, verify=True)
+    if response.status_code != 200:
+        return 'Status:', response.status_code, 'Problem with the request. Exiting.'
+        exit()
+    data = response.json()
+    return data
+# list of information we can get
+# home_info = get_public_Info()
+# print(f"IP address: {home_info['ip']}")
+# print(f"City: {home_info['city']}")
+# print(f"Country: {home_info['country']}")
+# print(f"Region: {home_info['region']}")
+# print(f"Time zone: {home_info['timezone']}")
+# print(f"ISP: {home_info['org']}")
 
 
 if __name__ == '__main__':
