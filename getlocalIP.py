@@ -65,53 +65,56 @@ def filter_result(raw_data):
                     'address':key,
                     'ports':[],
                 }
-                if 'name' in value['hostname'][0]:
+                if len(value['hostname']) > 0:
                     temp_data['hostname'] = value['hostname'][0]['name']
+                else:
+                    temp_data['hostname'] = 'none'
                 if value['macaddress'] is None:
                     temp_data['MAC_Address'] = 'none'                                
                 else: 
                     temp_data['MAC_Address'] = value['macaddress']['addr']                   
-                for value_port in value['ports']:
-                    if value_port['state'] == 'open':
-                        print(f"Host IP {key}: ")
-                        print(f"Protocol: {value_port['protocol']}")
-                        print(f"Port: {value_port['portid']}")
-                        protocol = value_port['protocol']
-                        port_id = value_port['portid']
-                        if 'name' in value_port['service']:
-                            print(f"Service Name: {value_port['service']['name']}")
-                            service_name = value_port['service']['name']
-                        else:
-                            service_name = 'none'
-                        if 'product' in value_port['service']:
-                            print(f"Product name: {value_port['service']['product']}")
-                            product_name = value_port['service']['product']
-                        else:
-                            product_name = 'none'
-                        if 'version' in value_port['service']:
-                            print(f"Product version: {value_port['service']['version']}")
-                            product_version = value_port['service']['version']
-                        else: 
-                            product_version = 'none'
-                        if len(value_port['cpe']) > 0:
-                            for cpes in value_port['cpe']:
-                                if 'cpe' in cpes: 
-                                    print(f"CPE: {cpes['cpe']}")
-                                    cpe = cpes['cpe']
-                                else:
-                                    cpe = 'none'
-                        else:    
-                            cpe = 'none'
-                        # Collect ports info
-                        temp_data['ports'].append({
-                            'Protocol': protocol,
-                            'Port' : port_id,
-                            'Name' : service_name,
-                            'Product' : product_name,
-                            'Version' : product_version,
-                            'CPE' : cpe,
-                            'Advisories': []
-                        })
+                if len(value['ports']) > 0:
+                    for value_port in value['ports']:
+                        if value_port['state'] == 'open':
+                            print(f"Host IP {key}: ")
+                            print(f"Protocol: {value_port['protocol']}")
+                            print(f"Port: {value_port['portid']}")
+                            protocol = value_port['protocol']
+                            port_id = value_port['portid']
+                            if 'name' in value_port['service']:
+                                print(f"Service Name: {value_port['service']['name']}")
+                                service_name = value_port['service']['name']
+                            else:
+                                service_name = 'none'
+                            if 'product' in value_port['service']:
+                                print(f"Product name: {value_port['service']['product']}")
+                                product_name = value_port['service']['product']
+                            else:
+                                product_name = 'none'
+                            if 'version' in value_port['service']:
+                                print(f"Product version: {value_port['service']['version']}")
+                                product_version = value_port['service']['version']
+                            else: 
+                                product_version = 'none'
+                            if len(value_port['cpe']) > 0:
+                                for cpes in value_port['cpe']:
+                                    if 'cpe' in cpes: 
+                                        print(f"CPE: {cpes['cpe']}")
+                                        cpe = cpes['cpe']
+                                    else:
+                                        cpe = 'none'
+                            else:    
+                                cpe = 'none'
+                            # Collect ports info
+                            temp_data['ports'].append({
+                                'Protocol': protocol,
+                                'Port' : port_id,
+                                'Name' : service_name,
+                                'Product' : product_name,
+                                'Version' : product_version,
+                                'CPE' : cpe,
+                                'Advisories': []
+                            })
                 filter_data.append(temp_data)
     # write filter data to file
     with open('test/filter_result.json','w') as json_file:
