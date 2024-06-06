@@ -200,8 +200,8 @@ if __name__ == '__main__':
         tmp_data = json.loads(json_string)
         data = filter_result(tmp_data)
         print(f"{data}")
-        write_to_html(data,'test/nmap_results.html')
-        webbrowser.open_new_tab('test/nmap_results.html')
+        write_to_html(data,'nmap_results.html')
+        webbrowser.open_new_tab('nmap_results.html')
     else:
         print(f"No interface found with the IP address: {ip_to_find}")
 
