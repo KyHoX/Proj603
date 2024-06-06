@@ -159,7 +159,7 @@ def get_public_Info():
 # Use InternetDB to search for public IP address of home network
 # reference guide at https://developer.shodan.io/api
 def shodan_search(IP_address):
-    API_KEY = "?key=TeBZ2FHvxsgKfVim71MKmX1EPY2ZW2m9" # API key - get from free account
+    API_KEY = "?key=" # API key - get from free account
     sd_url = 'https://api.shodan.io/shodan/host/'
     # IP_address = '172.67.193.90'
     qr_string = sd_url + IP_address + API_KEY
