@@ -129,7 +129,7 @@ def filter_result(raw_data):
                                 'CPE' : cpe,
                                 'Advisories': advisories,
                                 })
-                        filter_data.append(temp_data)
+                    filter_data.append(temp_data)
     # write filter data to file
     with open('filter_result.json','w') as json_file:
         json.dump(filter_data,json_file, indent=4)
