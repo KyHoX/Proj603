@@ -136,30 +136,6 @@ def filter_result(raw_data):
     # print(filter_data) 
     return filter_data
 
-# write data into an HTML file 
-def write_to_html(writing_data,html_file):
-    #   Open file location
-    with open(html_file, "w") as html_file:
-        html_file.write("<html><head><title>Network Scan Results</title></head><body>")
-        html_file.write(f"<h2>Network Scan Results</h2>")
-        html_file.write("<table border='1'>")
-        html_file.write("<tr><th>Host IP</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>CPE Code</th><th>Suggestions</th></tr>")
-        for i in range(len(writing_data)):
-        #for host, result in writing_data.item():
-            for y in range(len(writing_data[i]['ports'])):                
-                html_file.write("<tr>")
-                html_file.write(f"<td>{writing_data[i]['address']}</td>")
-                html_file.write(f"<td>{writing_data[i]['ports'][y]['Protocol']}</td>")
-                html_file.write(f"<td>{writing_data[i]['ports'][y]['Port']}</td>")
-                html_file.write(f"<td>{writing_data[i]['ports'][y]['Name']}</td>")
-                html_file.write(f"<td>{writing_data[i]['ports'][y]['CPE']}</td>")
-                html_file.write(f"<td>{writing_data[i]['ports'][y]['Advisories']}</td>")
-                html_file.write("</tr>")
-        html_file.write("</table>")
-        html_file.write("</body></html>")
-    # print("Results exported to results.html")
-    # webbrowser.open("results.html")  # Automatically open the HTML file
-
 # get public information
 # Public IP address
 # City, Region, Timezone, ISP name
@@ -180,6 +156,50 @@ def get_public_Info():
 # print(f"Time zone: {home_info['timezone']}")
 # print(f"ISP: {home_info['org']}")
 
+# Use InternetDB to search for public IP address of home network
+# reference guide at https://developer.shodan.io/api
+def shodan_search(IP_address):
+    API_KEY = "?key=TeBZ2FHvxsgKfVim71MKmX1EPY2ZW2m9" # API key - get from free account
+    sd_url = 'https://api.shodan.io/shodan/host/'
+    # IP_address = '172.67.193.90'
+    qr_string = sd_url + IP_address + API_KEY
+    response = requests.get(qr_string, verify=True)
+    if response.status_code != 200:
+        data = "status:", response.reason
+        return data
+    data = response.json()
+    return data
+
+# write data into an HTML file 
+def write_to_html(writing_data,html_file):
+    home_info = get_public_Info()
+    shodan_result = shodan_search(home_info['ip'])
+    # shodan_result = shodan_search('172.67.193.90')
+    #   Open file location
+    with open(html_file, "w") as html_file:
+        html_file.write("<html><head><title>Network Scan Results</title></head><body>")
+        html_file.write(f"<h2>Network Scan Results</h2>")
+        html_file.write("<table border='1'>")
+        html_file.write("<tr><th>Host IP</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>CPE Code</th><th>Suggestions</th></tr>")
+        for i in range(len(writing_data)):
+        #for host, result in writing_data.item():
+            for y in range(len(writing_data[i]['ports'])):                
+                html_file.write("<tr>")
+                html_file.write(f"<td>{writing_data[i]['address']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Protocol']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Port']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Name']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['CPE']}</td>")
+                html_file.write(f"<td>{writing_data[i]['ports'][y]['Advisories']}</td>")
+                html_file.write("</tr>")
+        html_file.write("</table>")
+        html_file.write("<div>")
+        html_file.write(f"Internet address of your home is: <b> {home_info['ip']}</b><br>")
+        html_file.write(f"it has {shodan_result} port(s) open to Internet. ")
+        html_file.write("</div>")
+        html_file.write("</body></html>")
+    # print("Results exported to results.html")
+    # webbrowser.open("results.html")  # Automatically open the HTML file
 
 if __name__ == '__main__':
     ip_to_find = get_working_ip()
