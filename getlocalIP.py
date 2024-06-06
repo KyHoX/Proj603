@@ -9,6 +9,7 @@ import nmap3
 import json 
 import ipaddress
 import requests
+import webbrowser
 
 # Get working IP address of machine. it should be a NIC 
 # which connected to a home network
@@ -55,81 +56,80 @@ def is_valid_ipv4(address):
 def filter_result(raw_data):    
     filter_data = []
     for key, value in raw_data.items():
-    if is_valid_ipv4(key):
-    # if (ipaddress.ip_address(key).version == 4):
-        # check if the host is up
-        if value['state']['state'] == 'up': 
-            temp_data = {
-                'hostname': 'none',
-                'MAC_Address':'none',
-                'address':key,
-                'ports':[],
-            }
-            if len(value['hostname']) > 0:
-                temp_data['hostname'] = value['hostname'][0]['name']
-            else:
-                temp_data['hostname'] = 'none'
-            if value['macaddress'] is None:
-                temp_data['MAC_Address'] = 'none'                                
-            else: 
-                temp_data['MAC_Address'] = value['macaddress']['addr']                   
-            if len(value['ports']) > 0:
-                for value_port in value['ports']:
-                    if value_port['state'] == 'open':
-                        print(f"Host IP {key}: ")
-                        print(f"Protocol: {value_port['protocol']}")
-                        print(f"Port: {value_port['portid']}")
-                        protocol = value_port['protocol']
-                        port_id = value_port['portid']
-                        if 'service' in value_port:
-                            if 'name' in value_port['service']:
-                                print(f"Service Name: {value_port['service']['name']}")
-                                service_name = value_port['service']['name']
-                            else:
-                                service_name = 'none'
-                            if 'product' in value_port['service']:
-                                print(f"Product name: {value_port['service']['product']}")
-                                product_name = value_port['service']['product']
-                            else:
-                                product_name = 'none'
-                            if 'version' in value_port['service']:
-                                print(f"Product version: {value_port['service']['version']}")
-                                product_version = value_port['service']['version']
-                            else: 
-                                product_version = 'none'
-                        if 'cpe' in value_port:                            
-                            for cpes in value_port['cpe']:
-                                if 'cpe' in cpes: 
-                                    print(f"CPE: {cpes['cpe']}")
-                                    cpe = cpes['cpe']
+        if is_valid_ipv4(key):
+            # check if the host is up
+            if value['state']['state'] == 'up': 
+                temp_data = {
+                    'hostname': 'none',
+                    'MAC_Address':'none',
+                    'address':key,
+                    'ports':[],
+                }
+                if len(value['hostname']) > 0:
+                    temp_data['hostname'] = value['hostname'][0]['name']
+                else:
+                    temp_data['hostname'] = 'none'
+                if value['macaddress'] is None:
+                    temp_data['MAC_Address'] = 'none'                                
+                else: 
+                    temp_data['MAC_Address'] = value['macaddress']['addr']                   
+                if len(value['ports']) > 0:
+                    for value_port in value['ports']:
+                        if value_port['state'] == 'open':
+                            print(f"Host IP {key}: ")
+                            print(f"Protocol: {value_port['protocol']}")
+                            print(f"Port: {value_port['portid']}")
+                            protocol = value_port['protocol']
+                            port_id = value_port['portid']
+                            if 'service' in value_port:
+                                if 'name' in value_port['service']:
+                                    print(f"Service Name: {value_port['service']['name']}")
+                                    service_name = value_port['service']['name']
                                 else:
-                                    cpe = 'none'                            
-                        else:
-                            cpe = 'none'
-                        advisories = 'N/A'
-                        if 'scripts' in value_port:
-                            if len(value_port['scripts']) > 0:
-                                for vul_script in value_port['scripts']:
-                                    if ('data' in vul_script) and (cpe != 'none'):
-                                        if cpe in vul_script['data']:
-                                            for child in vul_script['data'][cpe]['children']:
-                                                if child['is_exploit'] == 'true':
-                                                    advisories = 'Exploitable. Please disable or update/upgrade.'
-                                                    print(advisories)
-                                                    break
-                                                else: 
-                                                    advisories = 'N/A'
-                        # Collect ports info
-                        temp_data['ports'].append({
-                            'Protocol': protocol,
-                            'Port' : port_id,
-                            'Name' : service_name,
-                            'Product' : product_name,
-                            'Version' : product_version,
-                            'CPE' : cpe,
-                            'Advisories': advisories,
-                            })
-                    filter_data.append(temp_data)
+                                    service_name = 'none'
+                                if 'product' in value_port['service']:
+                                    print(f"Product name: {value_port['service']['product']}")
+                                    product_name = value_port['service']['product']
+                                else:
+                                    product_name = 'none'
+                                if 'version' in value_port['service']:
+                                    print(f"Product version: {value_port['service']['version']}")
+                                    product_version = value_port['service']['version']
+                                else: 
+                                    product_version = 'none'
+                            if 'cpe' in value_port:                            
+                                for cpes in value_port['cpe']:
+                                    if 'cpe' in cpes: 
+                                        print(f"CPE: {cpes['cpe']}")
+                                        cpe = cpes['cpe']
+                                    else:
+                                        cpe = 'none'                            
+                            else:
+                                cpe = 'none'
+                            advisories = 'N/A'
+                            if 'scripts' in value_port:
+                                if len(value_port['scripts']) > 0:
+                                    for vul_script in value_port['scripts']:
+                                        if ('data' in vul_script) and (cpe != 'none'):
+                                            if cpe in vul_script['data']:
+                                                for child in vul_script['data'][cpe]['children']:
+                                                    if child['is_exploit'] == 'true':
+                                                        advisories = 'Exploitable. Please disable or update/upgrade.'
+                                                        print(advisories)
+                                                        break
+                                                    else: 
+                                                        advisories = 'N/A'
+                            # Collect ports info
+                            temp_data['ports'].append({
+                                'Protocol': protocol,
+                                'Port' : port_id,
+                                'Name' : service_name,
+                                'Product' : product_name,
+                                'Version' : product_version,
+                                'CPE' : cpe,
+                                'Advisories': advisories,
+                                })
+                        filter_data.append(temp_data)
     # write filter data to file
     with open('filter_result.json','w') as json_file:
         json.dump(filter_data,json_file, indent=4)
@@ -201,6 +201,7 @@ if __name__ == '__main__':
         data = filter_result(tmp_data)
         print(f"{data}")
         write_to_html(data,'test/nmap_results.html')
+        webbrowser.open_new_tab('test/nmap_results.html')
     else:
         print(f"No interface found with the IP address: {ip_to_find}")
 
