@@ -11,3 +11,14 @@ Project deliverable
 
 Tools to scan home network is nmap. 
 Automation via Python 3.12.3
+
+Steps to run the code
+
+1. Depend on your current operating system, which is Windows or Linux, to start with installation script
+    a. If you are running Windows OS, please run this script first. ../scripts/windows_setup.bat
+    b. If you are running Linux OS, please run this script ../scripts/kali_setup.sh. At the moment, we work on Debian based OS with apt installed.
+2. After running environment is configured. Run the getlocalIP.py to scan your network. We assume that the box you run the script connected to your home network, either Wi-Fi or cable plugged.
+3. The scan result will display in HTML format with some suggestions if there are any vulnerabilities found.
+4. If you are willing to support our project, please share your JSON file, its name is 'nmap_home_result.json' in your current working directory. It will be helpful for us to build device pattern to recognize device types.
+
+# Thank you very much for your support.
