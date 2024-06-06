@@ -1,6 +1,6 @@
 # Project 603 - Cyber Security program - 2023/2024
-# Saskatchewan Polytechnic 
-# Team member: Le Tuan Vu, Pham Thanh Binh, Ho Minh Ky
+## Saskatchewan Polytechnic 
+### Team member: Le Tuan Vu, Pham Thanh Binh, Ho Minh Ky
 
 Project deliverable
 
