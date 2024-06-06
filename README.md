@@ -21,4 +21,4 @@ Steps to run the code
 3. The scan result will display in HTML format with some suggestions if there are any vulnerabilities found.
 4. If you are willing to support our project, please share your JSON file, its name is 'nmap_home_result.json' in your current working directory. It will be helpful for us to build device pattern to recognize device types.
 
-# Thank you very much for your support.
+## Thank you very much for your support.
