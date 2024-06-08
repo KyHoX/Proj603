@@ -165,7 +165,7 @@ def get_public_Info():
 def shodan_search(IP_address):
     API_KEY = "?key=" # API key - use academic key for search
     sd_url = 'https://api.shodan.io/shodan/host/'
-    IP_address = '172.67.193.90'
+    # IP_address = '172.67.193.90'
     qr_string = sd_url + IP_address + API_KEY
     response = requests.get(qr_string, verify=True)
     if response.status_code != 200:
