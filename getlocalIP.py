@@ -97,16 +97,20 @@ def filter_result(raw_data):
                                     product_version = value_port['service']['version']
                                 else: 
                                     product_version = 'none'
-                            if 'cpe' in value_port:                            
-                                for cpes in value_port['cpe']:
-                                    if 'cpe' in cpes: 
-                                        print(f"CPE: {cpes['cpe']}")
-                                        cpe = cpes['cpe']
-                                    else:
-                                        cpe = 'none'                            
+                            if 'cpe' in value_port:
+                                cpe = ''
+                                if len(value_port['cpe']) > 0:                            
+                                    for cpes in value_port['cpe']:
+                                        if 'cpe' in cpes: 
+                                            print(f"CPE: {cpes['cpe']}")
+                                            cpe = cpe + cpes['cpe'] + ','
+                                        else:
+                                            cpe = 'none'    
+                                else:
+                                    cpe = 'none'                         
                             else:
                                 cpe = 'none'
-                            advisories = 'N/A'
+                            advisories = 'Normal'
                             if 'scripts' in value_port:
                                 if len(value_port['scripts']) > 0:
                                     for vul_script in value_port['scripts']:
@@ -118,7 +122,7 @@ def filter_result(raw_data):
                                                         print(advisories)
                                                         break
                                                     else: 
-                                                        advisories = 'N/A'
+                                                        advisories = 'Normal'
                             # Collect ports info
                             temp_data['ports'].append({
                                 'Protocol': protocol,
@@ -159,16 +163,16 @@ def get_public_Info():
 # Use InternetDB to search for public IP address of home network
 # reference guide at https://developer.shodan.io/api
 def shodan_search(IP_address):
-    API_KEY = "?key=" # API key - get from free account
+    API_KEY = "?key=" # API key - use academic key for search
     sd_url = 'https://api.shodan.io/shodan/host/'
-    # IP_address = '172.67.193.90'
+    IP_address = '172.67.193.90'
     qr_string = sd_url + IP_address + API_KEY
     response = requests.get(qr_string, verify=True)
     if response.status_code != 200:
-        data = "status:", response.reason
+        data = "none"
         return data
     data = response.json()
-    return data
+    return data['ports']
 
 # write data into an HTML file 
 def write_to_html(writing_data,html_file):
@@ -180,16 +184,16 @@ def write_to_html(writing_data,html_file):
         html_file.write("<html><head><title>Network Scan Results</title></head><body>")
         html_file.write(f"<h2>Network Scan Results</h2>")
         html_file.write("<table border='1'>")
-        html_file.write("<tr><th>Host IP</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>CPE Code</th><th>Suggestions</th></tr>")
+        html_file.write("<tr><th>Host IP</th><th>MAC</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>Suggestions</th></tr>")
         for i in range(len(writing_data)):
         #for host, result in writing_data.item():
             for y in range(len(writing_data[i]['ports'])):                
                 html_file.write("<tr>")
                 html_file.write(f"<td>{writing_data[i]['address']}</td>")
+                html_file.write(f"<td>{writing_data[i]['MAC_Address']}</td>")
                 html_file.write(f"<td>{writing_data[i]['ports'][y]['Protocol']}</td>")
                 html_file.write(f"<td>{writing_data[i]['ports'][y]['Port']}</td>")
                 html_file.write(f"<td>{writing_data[i]['ports'][y]['Name']}</td>")
-                html_file.write(f"<td>{writing_data[i]['ports'][y]['CPE']}</td>")
                 html_file.write(f"<td>{writing_data[i]['ports'][y]['Advisories']}</td>")
                 html_file.write("</tr>")
         html_file.write("</table>")
