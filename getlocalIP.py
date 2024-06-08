@@ -103,7 +103,7 @@ def filter_result(raw_data):
                                     for cpes in value_port['cpe']:
                                         if 'cpe' in cpes: 
                                             print(f"CPE: {cpes['cpe']}")
-                                            cpe = cpe + cpes['cpe'] + ','
+                                            cpe = cpes['cpe']
                                         else:
                                             cpe = 'none'    
                                 else:
