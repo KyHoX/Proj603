@@ -27,14 +27,9 @@ REM Install psutil module using pip
 echo Installing psutil...
 pip install psutil
 
-REM Install PyQt5 module using pip
-echo Installing PyQt5...
-pip install PyQt5
-
-
-REM Install Nmap module using pip
-echo Installing python-nmap...
-pip install python-nmap
+REM Install requests module using pip
+echo Installing requests...
+pip install requests
 
 REM Install Nmap3 module using pip
 echo Installing python3-nmap...
