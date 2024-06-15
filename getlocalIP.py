@@ -10,6 +10,7 @@ import json
 import ipaddress
 import requests
 import webbrowser
+import datetime
 
 # Get working IP address of machine. it should be a NIC 
 # which connected to a home network
@@ -186,6 +187,9 @@ def write_to_html(writing_data,html_file):
     with open(html_file, "w") as html_file:
         html_file.write("<html><head><title>Network Scan Results</title></head><body>")
         html_file.write(f"<h2>Network Scan Results</h2>")
+        html_file.write(f"<div> Date:")
+        html_file.write(f"{datetime.date.today()}")
+        html_file.write(f"</div>")
         html_file.write("<table border='1'>")
         html_file.write("<tr><th>Host IP</th><th>MAC</th><th>Protocol</th><th>Port</th><th>Service Name</th><th>Suggestions</th></tr>")
         for i in range(len(writing_data)):
